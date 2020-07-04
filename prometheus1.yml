@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prom-dep
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      env: monitoring
+      app: prometheus
+  template:
+     metadata:
+       name: prometheus
+       labels:
+         env: monitoring
+         app: prometheus
+     spec:
+       containers:
+         - name: my-prometheus
+           image: vimal13/prometheus:latest
+           volumeMounts:
+             - name: prom-pvc
+               mountPath: /etc/prometheus/data
+       volumes:
+         - name: prom-pvc
+           persistentVolumeClaim:
+              claimName: prom-data-pvc
+        
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prom-expose
+
+spec:
+  selector:
+    app: prometheus
+  type: NodePort
+  ports:
+   - port: 9090
+     targetPort: 9090
+     nodePort: 31000
