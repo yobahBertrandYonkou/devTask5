@@ -20,9 +20,15 @@ spec:
          - name: my-prometheus
            image: vimal13/prometheus:latest
            volumeMounts:
+             - name: prometheus
+               mountPath: /etc/prometheus
+
              - name: prom-pvc
                mountPath: /etc/prometheus/data
        volumes:
+         - name: prometheus
+           configMap:
+             name: prometheus
          - name: prom-pvc
            persistentVolumeClaim:
               claimName: prom-data-pvc
