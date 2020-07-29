@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: graf-dep
+ 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      env: monitoring
+      app: grafana
+  template:
+    metadata:
+      name: grafana
+      labels:
+        env: monitoring
+        app: grafana
+    spec:
+      containers:
+        - name: my-grafana
+          image: vimal13/grafana
+          volumeMounts:  
+            - name: data-dir
+              mountPath: /var/lib/grafana/
+            
+   
+      
+      volumes:
+       - name: data-dir
+         persistentVolumeClaim:
+           claimName: graf-data-dir-pvc
+              
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: graf-expose
+
+spec:
+  selector:
+    app: grafana
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 30000
+    
